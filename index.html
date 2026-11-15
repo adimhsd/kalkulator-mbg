@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator MBG - BGN Apps</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgnBlue: '#1e3a8a', // Biru gelap
+                        bgnLightBlue: '#3b82f6', // Biru terang
+                        bgnDark: '#0f172a', // Hitam/Slate
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        input[type="text"]::-ms-clear { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-bgnDark dark:text-gray-100 transition-colors duration-300 font-sans antialiased">
+
+    <div class="max-w-md mx-auto min-h-screen flex flex-col shadow-xl bg-white dark:bg-slate-900">
+        
+        <header class="p-5 border-b border-gray-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-10">
+            <div class="flex items-center gap-3">
+                <img 
+                    src="https://upload.wikimedia.org/wikipedia/id/2/29/Logo_Badan_Gizi_Nasional.svg" 
+                    alt="Logo Badan Gizi Nasional" 
+                    class="h-12 w-12 object-contain"
+                >
+                <div>
+                    <h1 class="text-2xl font-bold text-bgnBlue dark:text-bgnLightBlue">Kalkulator MBG</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">1,2T Rupiah = 1 Hari MBG — BGN Apps</p>
+                </div>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition" aria-label="Toggle Dark Mode">
+                <svg id="moonIcon" class="w-6 h-6 text-gray-700 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+                <svg id="sunIcon" class="w-6 h-6 text-yellow-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <main class="flex-grow p-5 space-y-6">
+            
+            <section class="space-y-4">
+                <h2 class="text-lg font-semibold border-b border-gray-200 dark:border-slate-700 pb-2">Hitung MBG</h2>
+                
+                <div>
+                    <label for="rupiahInput" class="block text-sm font-medium mb-1">Jumlah (Rupiah)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 dark:text-gray-400 font-semibold">Rp.</span>
+                        </div>
+                        <input type="text" id="rupiahInput" class="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-bgnBlue focus:border-bgnBlue sm:text-lg transition" placeholder="0">
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Basis: 1.200.000.000.000 Rupiah = 1 hari MBG.</p>
+                </div>
+
+                <button id="btnHitung" class="w-full bg-bgnBlue hover:bg-blue-800 dark:bg-bgnLightBlue dark:hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition shadow-md active:scale-95">
+                    Hitung
+                </button>
+            </section>
+
+            <section id="resultArea" class="hidden bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg p-5 space-y-4 shadow-sm animate-fade-in">
+                <div class="text-center">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Hasil</p>
+                    <p class="text-3xl font-bold text-bgnBlue dark:text-bgnLightBlue break-all" id="resHari">0</p>
+                    <p class="text-sm font-semibold mt-1">Hari MBG</p>
+                </div>
+                
+                <hr class="border-blue-200 dark:border-slate-700">
+
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Setara dengan</p>
+                    <ul class="space-y-1 font-mono text-sm">
+                        <li><span id="resJam" class="font-bold text-gray-800 dark:text-gray-200">0</span> Jam</li>
+                        <li><span id="resMenit" class="font-bold text-gray-800 dark:text-gray-200">0</span> Menit</li>
+                        <li><span id="resDetik" class="font-bold text-gray-800 dark:text-gray-200">0</span> Detik</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-3 rounded border border-blue-100 dark:border-slate-700">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Atau tepatnya</p>
+                    <p class="font-bold text-lg text-gray-800 dark:text-white" id="resTepatnya">0 detik</p>
+                </div>
+            </section>
+
+            <section class="space-y-5 text-sm pt-4">
+                <div>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-2">Cara Hitung</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-600 dark:text-gray-400">
+                        <li><strong class="text-gray-800 dark:text-gray-300">Memasukkan nominal:</strong> Tulis jumlah uang dalam Rupiah (tanpa desimal). Tampilan memakai pemisah ribuan titik sesuai kebiasaan Indonesia.</li>
+                        <li><strong class="text-gray-800 dark:text-gray-300">Menekan Hitung:</strong> Aplikasi membagi nominal Anda dengan 1,2 triliun Rupiah per hari MBG sehingga diperoleh lamanya dalam "hari MBG".</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-2">Tentang Mata Uang Galaksi</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-2">
+                        <strong class="text-gray-800 dark:text-gray-300">Satire & konteks:</strong> Istilah ini dipakai dalam percakapan publik untuk menggambarkan skala anggaran dalam satuan yang disamakan dengan "mata uang galaksi" — alat ini hanya untuk perbandingan aritmatika, bukan kurs resmi.
+                    </p>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        <strong class="text-gray-800 dark:text-gray-300">Transparansi rumus:</strong> Satu hari MBG disetarakan dengan 1.200.000.000.000 Rupiah. Anda dapat memverifikasi dengan membagi nominal input Anda dengan angka tersebut.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="p-5 bg-gray-100 dark:bg-slate-950 text-center text-xs text-gray-500 dark:text-gray-500 border-t border-gray-200 dark:border-slate-800">
+            <p>&copy; 2026 BGN Lovers. All rights reserved.</p>
+            <p class="mt-1">Developed by <a href="#" class="text-bgnBlue dark:text-bgnLightBlue hover:underline">adi-muhamad.my.id</a></p>
+            <p class="mt-1 font-semibold">Dosen Sontoloyo</p>
+        </footer>
+    </div>
+
+    <script>
+        // Setup Dark Mode Toggle
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        // Cek preferensi awal
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            sunIcon.classList.remove('hidden');
+        } else {
+            html.classList.remove('dark');
+            moonIcon.classList.remove('hidden');
+        }
+
+        // Fungsi klik Toggle
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                localStorage.theme = 'light';
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        });
+
+        // Setup Formatter Input Ribuan
+        const inputRupiah = document.getElementById('rupiahInput');
+        
+        inputRupiah.addEventListener('input', function(e) {
+            // Hapus karakter selain angka
+            let value = this.value.replace(/[^0-9]/g, '');
+            
+            if (value !== '') {
+                // Format dengan pemisah titik (locale id-ID)
+                this.value = parseInt(value, 10).toLocaleString('id-ID');
+            } else {
+                this.value = '';
+            }
+        });
+
+        // Helper untuk menghindari notasi eksponensial (e.g. 8.33e-8) dan memformat desimal
+        function formatDecimalStr(num) {
+            if (num === 0) return "0";
+            // Memaksa formatting standar hingga 12 angka di belakang koma (titik)
+            let str = num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 12 });
+            return str; 
+        }
+
+        // Logic Perhitungan
+        const btnHitung = document.getElementById('btnHitung');
+        const resultArea = document.getElementById('resultArea');
+        const BASIS_MBG = 1200000000000; // 1.2 Triliun
+
+        btnHitung.addEventListener('click', () => {
+            // Ambil nilai mentah (hilangkan titik)
+            let rawValue = inputRupiah.value.replace(/\./g, '');
+            let nominal = parseInt(rawValue, 10);
+
+            if (isNaN(nominal) || nominal === 0) {
+                alert('Silakan masukkan jumlah Rupiah yang valid.');
+                return;
+            }
+
+            // Hitung Konversi
+            let days = nominal / BASIS_MBG;
+            let hours = days * 24;
+            let minutes = hours * 60;
+            let seconds = minutes * 60;
+
+            // Render ke DOM
+            document.getElementById('resHari').innerText = formatDecimalStr(days);
+            document.getElementById('resJam').innerText = formatDecimalStr(hours);
+            document.getElementById('resMenit').innerText = formatDecimalStr(minutes);
+            document.getElementById('resDetik').innerText = formatDecimalStr(seconds);
+
+            // Logika "Atau tepatnya" (Pilih unit paling masuk akal)
+            let tepatnya = "";
+            if (days >= 1) {
+                tepatnya = formatDecimalStr(days) + " Hari";
+            } else if (hours >= 1) {
+                tepatnya = formatDecimalStr(hours) + " Jam";
+            } else if (minutes >= 1) {
+                tepatnya = formatDecimalStr(minutes) + " Menit";
+            } else {
+                tepatnya = formatDecimalStr(seconds) + " Detik";
+            }
+            
+            document.getElementById('resTepatnya').innerText = tepatnya;
+
+            // Tampilkan area hasil
+            resultArea.classList.remove('hidden');
+            
+            // Opsional: Scroll halus ke bawah
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    </script>
+</body>
+</html>
